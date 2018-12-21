@@ -16,13 +16,13 @@ def requirements():
 
 packages = find_packages(exclude=['tests*'])
 
-setup(name='catapult',
+setup(name='catapult3',
       version=__version__,
       author='Artemiy Pulyavin',
       author_email='artemiy@pulyavin.ru',
       license='LGPLv3',
       keywords='deploy',
-      description='Catapult - Continuous Delivery Platform',
+      description='Catapult - DevOps Deployment System',
       packages=packages,
       install_requires=requirements(),
       include_package_data=True,
