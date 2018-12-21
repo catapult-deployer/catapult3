@@ -1,0 +1,16 @@
+[Unit]
+Description=Catapult unit for service {{ name }}
+After=network.target
+
+[Service]
+Type=simple
+User={{ user }}
+Group={{ user }}
+ExecStart={{ exec_start }}
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+Restart=always
+{{ environments }}
+
+[Install]
+WantedBy=multi-user.target

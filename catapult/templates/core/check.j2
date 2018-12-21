@@ -1,0 +1,103 @@
+#!/bin/bash
+
+exiterr () {
+    echo "$@" 1>&2;
+    exit 1
+}
+
+# check sudo without password
+sudo -k # make sure to ask for password on next sudo
+if [ "$(sudo -n $(echo whoami))" != "root" ]; then
+    exiterr "Error: user $(whoami) have not sudo without password"
+fi
+
+# create deploy folder
+if [ ! -d "{{ deploy_path }}" ]; then
+    sudo mkdir -p {{ deploy_path }}
+    sudo chmod -R u+rw {{ deploy_path }}
+    sudo chown -R {{ user }}:{{ user }} {{ deploy_path }}
+fi
+
+# create project folder
+if [ ! -d "{{ deploy_path }}/{{ service_name }}" ]; then
+    sudo mkdir -p {{ deploy_path }}/{{ service_name }}
+    sudo chmod -R u+rw {{ deploy_path }}/{{ service_name }}
+    sudo chown -R {{ user }}:{{ user }} {{ deploy_path }}/{{ service_name }}
+fi
+
+# create shared folder
+if [ ! -d "{{ deploy_path }}/{{ service_name }}/shared" ]; then
+    sudo mkdir -p {{ deploy_path }}/{{ service_name }}/shared
+    sudo chmod -R u+rw {{ deploy_path }}/{{ service_name }}/shared
+    sudo chown -R {{ user }}:{{ user }} {{ deploy_path }}/{{ service_name }}/shared
+fi
+
+# create releases folder
+if [ ! -d "{{ deploy_path }}/{{ service_name }}/releases" ]; then
+    sudo mkdir -p {{ deploy_path }}/{{ service_name }}/releases
+    sudo chmod -R u+rw {{ deploy_path }}/{{ service_name }}/releases
+    sudo chown -R {{ user }}:{{ user }} {{ deploy_path }}/{{ service_name }}/releases
+fi
+
+# check if rsync exists
+if [ ! -x "$(command -v rsync)" ]; then
+    exiterr "Error: rsync is not installed"
+fi
+
+# check if systemctl exists
+if [ ! -x "$(command -v systemctl)" ]; then
+    exiterr "Error: systemctl is not installed"
+fi
+
+# check if tar exists
+if [ ! -x "$(command -v tar)" ]; then
+    exiterr "Error: tar is not installed"
+fi
+
+check_web () {
+    # some module configure
+    true
+
+{{ web_items }}
+}
+
+check_bot () {
+    # some module configure
+    true
+
+{{ bot_items }}
+}
+
+check_web_and_bot () {
+    # some module configure
+    true
+
+{{ web_and_bot_items }}
+}
+
+check_maintain () {
+    # none configure needed
+    true
+}
+
+case $1 in
+    web )
+        check_web
+        check_web_and_bot
+    ;;
+    bot )
+        check_bot
+        check_web_and_bot
+    ;;
+    maintain )
+        check_maintain
+    ;;
+    all )
+        check_web
+        check_bot
+        check_web_and_bot
+        check_maintain
+    ;;
+esac
+
+exit 0

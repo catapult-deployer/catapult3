@@ -1,0 +1,7 @@
+if [ ! -x "$(command -v nginx)" ]; then
+    exiterr "Error: nginx is not installed"
+fi
+
+if [ ! -d "/etc/nginx/sites-enabled" ]; then
+    exiterr "Error: folder /etc/nginx/sites-enabled does not exist"
+fi

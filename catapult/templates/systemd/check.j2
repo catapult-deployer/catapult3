@@ -1,0 +1,3 @@
+if [ ! "$(pidof systemd)" -eq "1" ]; then
+    exiterr "Error: systemd not installed"
+fi

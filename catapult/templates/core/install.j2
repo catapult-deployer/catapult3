@@ -1,0 +1,98 @@
+#!/bin/bash
+
+exiterr () {
+    echo "$@" 1>&2;
+    exit 1
+}
+
+# Sync shared folders
+rsync -rl {{ release_path }}/shared/ {{ deploy_path }}/{{ service_name }}/shared
+sudo chown -R {{ user }}:{{ user }} {{ deploy_path }}/{{ service_name }}/shared
+
+# Linked folders
+shared_folder="{{ deploy_path }}/{{ service_name }}/shared"
+code_folder="{{ release_path }}/code"
+paths=( {{ linked_paths }} )
+
+for path in "${paths[@]}"
+do
+    if [ -z "$path" ]; then
+        continue
+    fi
+
+    shared_path=${shared_folder}/${path}
+    code_path=${code_folder}/${path}
+
+    if [ -d $shared_path ]; then
+        if [ -d $code_path ]; then
+            rm -rf $code_path
+        fi
+
+        ln -s $shared_path $code_path
+    fi
+
+    if [ -f $shared_path ]; then
+        if [ -f $code_path ]; then
+            rm -rf $code_path
+        fi
+
+        ln -s $shared_path $code_path
+    fi
+done
+
+
+install_web () {
+    # some module configure
+    true
+
+{{ web_items }}
+}
+
+install_bot () {
+    # some module configure
+    true
+
+{{ bot_items }}
+}
+
+install_web_and_bot () {
+    # some module configure
+    true
+
+{{ web_and_bot_items }}
+}
+
+install_maintain () {
+    # none installing needed
+    true
+}
+
+# Current type of server [all, bot, web, maintain]
+case $1 in
+    web )
+        install_web
+        install_web_and_bot
+    ;;
+    bot )
+        install_bot
+        install_web_and_bot
+    ;;
+    maintain )
+        install_maintain
+    ;;
+    all )
+        install_web
+        install_bot
+        install_web_and_bot
+        install_maintain
+    ;;
+esac
+
+# Write current release
+echo "{{ release_name }}" > "{{ deploy_path }}/{{ service_name }}/current.txt"
+if [ -e "{{ deploy_path }}/{{ service_name }}/current" ]; then
+    rm "{{ deploy_path }}/{{ service_name }}/current"
+fi
+ln -s "{{ release_path }}/code" "{{ deploy_path }}/{{ service_name }}/current"
+
+exit 0

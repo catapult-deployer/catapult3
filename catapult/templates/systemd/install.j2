@@ -1,0 +1,29 @@
+# Configure systemd
+if [ -f "{{ release_path }}/configs/systemd" ]; then
+    if [ -d "/etc/systemd/system" ]; then
+        # remove old link if exists
+        if [ -f "/etc/systemd/system/{{ service_name }}.service" ] || [ -L "/etc/systemd/system/{{ service_name }}.service" ]; then
+            sudo rm -f /etc/systemd/system/{{ service_name }}.service
+        fi
+
+        sudo chmod 664 {{ release_path }}/configs/systemd
+        sudo chown root:root {{ release_path }}/configs/systemd
+        sudo ln -s {{ release_path }}/configs/systemd /etc/systemd/system/{{ service_name }}.service
+    else
+        exiterr "Folder /etc/systemd/system does not exist"
+    fi
+else
+    if [ -f "/etc/systemd/system/{{ service_name }}.service" ]; then
+        sudo rm -f /etc/systemd/system/{{ service_name }}.service
+    fi
+fi
+
+sudo systemctl daemon-reload
+if [ $? -ne 0 ]; then
+    exiterr "An error occurred with daemon-reload instruction"
+fi
+
+sudo systemctl restart {{ service_name }}
+if [ $? -ne 0 ]; then
+    exiterr "An error occurred with restarting service {{ service_name }}"
+fi

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+acquire_lock () {
+    if [ -e "{{ service_folder }}" ]; then
+        if [ -f "{{ service_folder }}/lock.txt" ]; then
+            echo "false"
+        else
+            echo "{{ release_name }}" > "{{ service_folder }}/lock.txt"
+
+            echo "true"
+        fi
+    else
+        echo "true"
+    fi
+}
+
+release_lock () {
+    if [ -e "{{ service_folder }}/lock.txt" ]; then
+        rm "{{ service_folder }}/lock.txt"
+    fi
+
+    echo "true"
+}
+
+get_current_release () {
+    if [ -e "{{ service_folder }}" ]; then
+        if [ -e "{{ service_folder }}/current.txt" ]; then
+            cat {{ service_folder }}/current.txt
+        else
+            echo "current_txt_file_not_exists"
+        fi
+    else
+        echo "service_folder_not_exists"
+    fi
+}
+
+case $1 in
+    acquire_lock )
+        acquire_lock
+    ;;
+    release_lock )
+        release_lock
+    ;;
+    get_current_release )
+        get_current_release
+    ;;
+esac
+
+exit 0

@@ -1,0 +1,22 @@
+# Configure crontab
+if [ -f "{{ release_path }}/configs/crontab" ]; then
+    if [ -d "/etc/cron.d" ]; then
+        # remove old link if exists
+        if [ -f "/etc/cron.d/{{ file_name }}" ] || [ -L "/etc/cron.d/{{ file_name }}" ]; then
+            sudo rm -f /etc/cron.d/{{ file_name }}
+        fi
+
+        sudo chmod 644 {{ release_path }}/configs/crontab
+        sudo chown root:root {{ release_path }}/configs/crontab
+        sudo ln -s {{ release_path }}/configs/crontab /etc/cron.d/{{ file_name }}
+    else
+        exiterr "Folder /etc/cron.d does not exist"
+    fi
+else
+    if [ -f "/etc/cron.d/{{ file_name }}" ]; then
+        rm -f /etc/cron.d/{{ file_name }}
+    fi
+fi
+
+# Reload crontab
+sudo systemctl restart cron

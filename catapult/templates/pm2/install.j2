@@ -1,0 +1,11 @@
+# Configure pm2
+if [ -f $HOME/.pm2/catapult/{{ service_name }}.json ] || [ -L $HOME/.pm2/catapult/{{ service_name }}.json ]; then
+    pm2 delete $HOME/.pm2/catapult/{{ service_name }}.json
+    rm -f $HOME/.pm2/catapult/{{ service_name }}.json
+fi
+
+if [ -f "{{ release_path }}/configs/pm2" ]; then
+    ln -s {{ release_path }}/configs/pm2 $HOME/.pm2/catapult/{{ service_name }}.json
+
+    pm2 start $HOME/.pm2/catapult/{{ service_name }}.json
+fi

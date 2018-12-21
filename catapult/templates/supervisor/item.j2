@@ -1,0 +1,10 @@
+[program:{{ program }}]
+process_name={{ process_name }}
+command={{ command }}
+autostart=true
+autorestart=true
+user={{ user }}
+numprocs={{ numprocs }}
+redirect_stderr=true
+stdout_logfile=/var/log/supervisor/{{ storage("release.service") }}/{{ program }}.log
+

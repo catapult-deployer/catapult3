@@ -1,0 +1,27 @@
+# Configure nginx
+if [ -f "{{ release_path }}/configs/nginx" ]; then
+    if [ -d "/etc/nginx/sites-enabled" ]; then
+        # remove old link if exists
+        if [ -f "/etc/nginx/sites-enabled/{{ file_name }}" ] || [ -L "/etc/nginx/sites-enabled/{{ file_name }}" ]; then
+            sudo rm -f /etc/nginx/sites-enabled/{{ file_name }}
+        fi
+
+        sudo ln -s {{ release_path }}/configs/nginx /etc/nginx/sites-enabled/{{ file_name }}
+    else
+        exiterr "Folder /etc/nginx/sites-enabled does not exist"
+    fi
+else
+    if [ -f "/etc/nginx/sites-enabled/{{ file_name }}" ]; then
+        sudo rm -f /etc/nginx/sites-enabled/{{ file_name }}
+    fi
+fi
+
+# Check new nginx configuration
+sudo nginx -t &>/dev/null
+
+if [ "$?" -ne "0" ]; then
+    exiterr "nginx: config err"
+fi
+
+# Reload nginx
+sudo systemctl reload nginx

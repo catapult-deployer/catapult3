@@ -1,0 +1,34 @@
+# Configure supervisor
+if [ -f "{{ release_path }}/configs/supervisor" ]; then
+    if [ -d "/etc/supervisor/conf.d" ]; then
+        # remove old link if exists
+        if [ -f "/etc/supervisor/conf.d/{{ file_name }}.conf" ] || [ -L "/etc/supervisor/conf.d/{{ file_name }}.conf" ]; then
+            sudo rm -f /etc/supervisor/conf.d/{{ file_name }}.conf
+        fi
+
+        sudo ln -s {{ release_path }}/configs/supervisor /etc/supervisor/conf.d/{{ file_name }}.conf
+    else
+        exiterr "Folder /etc/supervisor/conf.d does not exist"
+    fi
+else
+    if [ -f "/etc/supervisor/conf.d/{{ file_name }}.conf" ]; then
+        sudo rm -f /etc/supervisor/conf.d/{{ file_name }}.conf
+    fi
+fi
+
+# create log folder for service
+sudo mkdir -p /var/log/supervisor/{{ service_name }}
+
+# Reload supervisor
+sudo systemctl restart supervisor
+if [ $? -ne 0 ]; then
+    exiterr "An error occurred with restarting service supervisor"
+fi
+
+# Sleep for supervisor
+sleep 1
+
+re='^[0-9]+$'
+if ! [[ "$(sudo supervisorctl pid)" =~ $re ]] ; then
+    exiterr "supervisorctl: config err"
+fi

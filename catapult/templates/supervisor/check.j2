@@ -1,0 +1,7 @@
+if [ ! -x "$(command -v supervisord)" ]; then
+    exiterr "Error: supervisord is not installed"
+fi
+
+if [ ! -d "/etc/supervisor/conf.d" ]; then
+    exiterr "Error: folder /etc/supervisor/conf.d does not exist"
+fi

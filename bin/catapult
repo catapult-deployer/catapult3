@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+from catapult.library.transformers import from_args_to_request, saturate_request
+from catapult.library.validators import validate_request
+from catapult.library.parsers import parse_config, parse_services
+from catapult.library.exceptions import InvalidRequestException, ConfigParserException
+from catapult.library.helpers import remove_releases_folder, start_logging
+from catapult.loggers.cli import Logger
+from catapult.deploy.factory import factory
+from catapult.server.processes.master import master
+
+
+parser = argparse.ArgumentParser(
+    description='Catapult - Continuous Delivery Platform',
+    add_help=True,
+)
+subparsers = parser.add_subparsers(help='List of commands', dest='action')
+
+# Deploy action
+deploy_parser = subparsers.add_parser('deploy', help='Start deploy')
+deploy_parser.add_argument(
+    '--project',
+    action='store', type=str,
+    help='Full path to project folder'
+)
+deploy_parser.add_argument(
+    '-s', '--service',
+    type=str,
+    help='Service name'
+)
+deploy_parser.add_argument(
+    '-b', '--branch',
+    action='store', type=str,
+    help='Branch or tag name for deploy'
+)
+deploy_parser.add_argument(
+    '-p', '--place',
+    action='store', type=str,
+    help='Place for deploy'
+)
+deploy_parser.add_argument(
+    '--force',
+    action='store_true',
+    help='Force deploy'
+)
+deploy_parser.add_argument(
+    '--command',
+    action='append',
+    help='Command that will be executed on maintain server',
+    default=[]
+)
+deploy_parser.add_argument(
+    '--parameter',
+    action='append',
+    help='Custom environment parameter',
+    default=[]
+)
+
+# Server action
+server_parser = subparsers.add_parser('server', help='RestAPI server for Catapult')
+server_parser.add_argument(
+    '--project',
+    action='store', type=str,
+    help='Full path to project folder'
+)
+
+args = parser.parse_args()
+
+if args.action is None:
+    print('Use --help flag for get information')
+    exit(1)
+
+project_path = os.getcwd()
+if args.project:
+    project_path = args.project
+
+config = {}
+services = {}
+
+try:
+    config = parse_config(project_path)
+    services = parse_services(project_path, config)
+except ConfigParserException as error:
+    print(error)
+    exit(1)
+
+deploy = factory(
+    project_path,
+    config,
+    services
+)
+
+#
+# Cli deploy
+#
+if args.action == 'deploy':
+    request = from_args_to_request(args)
+
+    try:
+        validate_request(request, services)
+    except InvalidRequestException as error:
+        print(error)
+        exit(1)
+
+    request = saturate_request(request)
+
+    logger = Logger()
+
+    try:
+        deploy(request, logger)
+    except Exception as error:
+        print(error)
+        exit(1)
+
+    exit(0)
+
+#
+# Server deploy
+#
+if args.action == 'server':
+    start_logging(project_path)
+    remove_releases_folder(project_path)
+
+    master(config, services, deploy)
+

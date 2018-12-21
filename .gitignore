@@ -1,0 +1,26 @@
+example-project/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# egg
+*.egg-info/
+*.egg
+
+# Distribution / packaging
+venv/
+env/
+build/
+dist/
+sdist/
+storage.db
+
+# Sphinx documentation
+docs/_build/
+
+# Editors
+target/
+.idea/
+*.sublime*
+.DS_Store
