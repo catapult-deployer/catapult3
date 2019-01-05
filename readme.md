@@ -1,15 +1,35 @@
+# Install
+
+```
+pip3 install catapult3
+```
+
+После этого вам будет доступна утилита `catapult`
+
+Деплой можно запустить как в CLI режиме, так и поднять web-server, который будет выполнять запросы на деплой.
+
+# Services
+
+Для работы Catapult, вам необходимо создать директорию и поместить в нее файл `config.yml`, в котором будет находиться конфигурация деплой сервера в формате YAML.
+
+В этой же директории создайте директорию с именем `services`. Каждая директория в `services` - это сервис, который можно будет деплоить. Имя директории - это имя сервиса для деплоя.
+
+Директория-сервис содержит файл `config.yml`, описывающий настройки деплоя сервиса. Так, например, вам необходимо будет указать список мест, куда может деплоиться ваш сервис - `place` (это могут быть стейдж и продакшн сервера). И, по необходимости, директорию `shared` с произвольным содержимым.
+
+Директория `recipes` может содержать дополнительные рецепты (набор инструкций) для деплоя сервисов. Рецепты пишутся на языке Python.
+
+
 # Command Line Interface
 
-
-| short flag |  full flag  |                                       description |
-|:----------:|:------------|:--------------------------------------------------|
-|            | --project   | full path for folder with catapult deploy project |
-| -s         | --service   | name of service                                   |
-| -b         | --branch    | name of branch or tag                             |
-| -p         | --place     | name of place                                     |
-|            | --force     | is force deploy?                                  |
-|            | --command   | command will be executed on maintain server       |
-|            | --parameter | environment parameter ("key:value")               |
+| short flag |  full flag  | required | description                                       |
+|:----------:|:------------|:--------:|:--------------------------------------------------|
+|            | --project   | no       | full path for folder with catapult deploy project |
+| -s         | --service   | yes      | name of service                                   |
+| -b         | --branch    | yes      | name of branch or tag                             |
+| -p         | --place     | yes      | name of place                                     |
+|            | --force     | yes      | is force deploy?                                  |
+|            | --command   | yes      | command will be executed on maintain server       |
+|            | --parameter | yes      | environment parameter ("key:value")               |
 
 ```
 catapult deploy -s analytics -p production -b master --project ../deploy --force --command "./artisan clear:cache" --command "./artisan config:clear" --parameter "param1:value" --parameter "param2:value"
