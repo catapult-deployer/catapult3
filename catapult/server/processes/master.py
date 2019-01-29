@@ -38,13 +38,13 @@ def master(config, services, deploy):
         )
         start_process(worker, arguments)
 
-    logging.info('run {} writer process'.format(workers))
+    logging.info('run writer process')
     start_process(writer, (
         repository,
         write_queue,
     ))
 
-    logging.info('run {} server process'.format(workers))
+    logging.info('run server process')
     start_process(server, (
         config,
         services,
