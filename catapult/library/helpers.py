@@ -16,7 +16,7 @@ def parse_yaml(path):
 
     with open(path) as stream:
         try:
-            return yaml.load(stream)
+            return yaml.load(stream, Loader=yaml.Loader)
         except Exception as error:
             raise ConfigParserException(
                 'An error occurred with parsing yaml file by path "{}":\n\n{}'.format(
