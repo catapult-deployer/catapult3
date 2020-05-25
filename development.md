@@ -14,8 +14,22 @@ pip install -r requirements.txt
 pip freeze > requirements.txt
 ```
 
-# upgrade packages
+## upgrade packages
 
 ```bash
 pipupgrade --all
+```
+
+## release
+
+```bash
+pip install twine
+```
+
+```bash
+python setup.py sdist
+```
+
+```bash
+twine upload dist/*
 ```
