@@ -363,3 +363,20 @@ def normalize_pm2(service_name, applications):
             application['weight'] = 1
 
     return applications
+
+
+def normalize_docker(config):
+    if 'dockerfile' not in config:
+        raise ModuleException('You must specify section "dockerfile" for "docker" section in deploy.yml')
+
+    if 'workdir' not in config:
+        raise ModuleException('You must specify section "workdir" for "docker" section in deploy.yml')
+
+    if 'buildargs' not in config:
+        config['buildargs'] = {}
+
+    if 'buildargs' in config:
+        if not isinstance(config['buildargs'], dict):
+            raise ModuleException('Section "buildargs" for "docker" section in deploy.yml must be a dict')
+
+    return config

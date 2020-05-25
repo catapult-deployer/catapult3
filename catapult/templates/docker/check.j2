@@ -1,0 +1,11 @@
+if [ ! -x "$(command -v docker)" ]; then
+    exiterr "Error: docker is not installed"
+fi
+
+# Check if docker is running
+
+sudo docker info >/dev/null 2>&1 && { docker_state=1; } || { docker_state=0; }
+
+if [ $docker_state != 1 ]; then
+    exiterr "Error: Docker does not seem to be running or you don't have permissions"
+fi

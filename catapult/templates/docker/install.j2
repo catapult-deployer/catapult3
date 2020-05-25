@@ -1,0 +1,28 @@
+# pulling docker image
+echo "logging in to registry {{ server }}"
+sudo docker login {{ server }} -u {{ username }} -p {{ password }}
+
+echo "pulling image with tag {{ tag }}"
+sudo docker pull {{ tag }}
+
+if [ "$?" -ne "0" ]; then
+    exiterr "docker: can not pull image"
+fi
+
+echo "stopping container with name {{ container }}"
+sudo docker stop {{ container }} || echo nothing to stop
+
+echo "removing container with name {{ container }}"
+sudo docker rm -f {{ container }} || echo nothing to remove
+
+echo "running container with name {{ container }}"
+sudo docker run -d {{ publish }} \
+    --name {{ container }} \
+    {{ volumes }}
+    --restart=always \
+    {{ tag }}
+
+
+if [ "$?" -ne "0" ]; then
+    exiterr "docker: can not run"
+fi

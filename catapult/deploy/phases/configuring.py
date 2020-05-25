@@ -46,7 +46,7 @@ def parse_deploy_yaml(storage, paths, logger):
     else:
         with open(path) as stream:
             try:
-                deploy_yaml = yaml.load(stream)
+                deploy_yaml = yaml.load(stream, Loader=yaml.Loader)
             except Exception as error:
                 raise DeployException(
                     'An error occurred "{}" with parsing deploy.yml file by path "{}"'.format(error, path)

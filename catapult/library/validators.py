@@ -79,6 +79,16 @@ def validate_config(config):
     if 'port' not in config['server']:
         raise ConfigParserException('You must provide "port" in section "server" of config.yml file')
 
+    if 'registry' in config:
+        if 'server' not in config['registry']:
+            raise ConfigParserException('You must provide "server" in section "registry" of config.yml file')
+
+        if 'username' not in config['registry']:
+            raise ConfigParserException('You must provide "username" in section "registry" of config.yml file')
+
+        if 'password' not in config['registry']:
+            raise ConfigParserException('You must provide "password" in section "registry" of config.yml file')
+
     if 'notifications' in config:
         for transport in config['notifications']:
             if 'token' not in config['notifications'][transport]:

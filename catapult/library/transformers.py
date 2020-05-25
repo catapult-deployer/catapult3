@@ -95,6 +95,11 @@ def transform_service(service, config):
         # set repo
         service['places'][place]['repo'] = service['repo']
 
+        # set registry
+        service['places'][place]['registry'] = ''
+        if 'registry' in service:
+            service['places'][place]['registry'] = service['registry']
+
         # set linked paths
         service['places'][place]['linked'] = []
         if 'linked' in service:
@@ -194,5 +199,9 @@ def transform_config(project_path, config):
     git_key_file = normpath(config['deploy']['git']['key_file'])
     git_key_file = join(project_path, git_key_file)
     config['deploy']['git']['key_file'] = git_key_file
+
+    if 'registry' in config:
+        if 'base_url' not in config['registry']:
+            config['registry']['base_url'] = 'unix://var/run/docker.sock'
 
     return config
