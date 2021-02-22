@@ -20,8 +20,9 @@ fi
 sudo mkdir -p /var/log/supervisor/{{ service_name }}
 
 # Reload supervisor
-sudo supervisorctl reread
-sudo supervisorctl update
+#sudo supervisorctl reread
+#sudo supervisorctl update
+sudo systemctl restart supervisor
 if [ $? -ne 0 ]; then
     exiterr "An error occurred with restarting service supervisor"
 fi
