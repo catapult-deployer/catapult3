@@ -17,9 +17,10 @@ def get_balancing_demons(demons):
             continue
 
         for _id in range(0, demon['instances']):
-            demon['name'] = '{}-{}'.format(demon['name'], _id)
+            copiend = demon.copy()
+            copiend['name'] = '{}-{}'.format(copiend['name'], _id)
 
-            balancing.append(demon)
+            balancing.append(copiend)
 
     shuffle(balancing)
 

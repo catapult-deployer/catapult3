@@ -129,12 +129,19 @@ def render(demons, storage, paths):
         })
 
         numprocs = 1
+        process_name = '{}_{}'.format(
+            storage.get('release.service'),
+            demon['name'],
+        )
+
         if demon['type'] == BOT_MIRRORING:
             numprocs = demon['instances']
+            process_name = '%(program_name)s_%(process_num)02d'
 
         item = render_path(path_item, {
+            'service': storage.get('release.service'),
             'program': demon['name'],
-            'process_name': '%(program_name)s_%(process_num)02d',
+            'process_name': process_name,
             'command': command,
             'user': storage.get('config.deploy.user'),
             'numprocs': str(numprocs),
