@@ -10,6 +10,7 @@ from catapult.library.helpers import remove_releases_folder, start_logging
 from catapult.loggers.cli import Logger
 from catapult.deploy.factory import factory
 from catapult.server.processes.master import master
+from catapult.version import __version__
 
 
 parser = argparse.ArgumentParser(
@@ -69,7 +70,9 @@ server_parser.add_argument(
 args = parser.parse_args()
 
 if args.action is None:
-    print('Use --help flag for get information')
+    print('This is {} version of Catapult\nUse --help flag for get information'.format(
+        __version__,
+    ))
     exit(1)
 
 project_path = os.getcwd()
